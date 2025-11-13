@@ -9,7 +9,9 @@ def model_prediction(test_image):
     input_arr = tf.keras.preprocessing.image.img_to_array(image)
     input_arr = np.array([input_arr])
     predictions = model.predict(input_arr)
-    return np.argmax(predictions)
+    result_index = np.argmax(predictions)
+    confidence = np.max(predictions) * 100  # Convert to percentage
+    return result_index, confidence
 
 st.set_page_config(page_title="Khet Sahayak", layout="wide")
 
@@ -67,6 +69,7 @@ ui_text = {
         "predict_btn": "Predict",
         "prediction": "Our Prediction",
         "result_prefix": "Model predicts: ",
+        "confidence": "Confidence: ",
         "footer": "© 2025 Khet Sahayak. All rights reserved."
     },
     "hi": {
@@ -77,6 +80,7 @@ ui_text = {
         "predict_btn": "पूर्वानुमान लगाएं",
         "prediction": "हमारा पूर्वानुमान",
         "result_prefix": "मॉडल का पूर्वानुमान: ",
+        "confidence": "विश्वास स्तर: ",
         "footer": "© 2025 खेत सहायक. सर्वाधिकार सुरक्षित."
     },
     "pa": {
@@ -87,6 +91,7 @@ ui_text = {
         "predict_btn": "ਅੰਦਾਜ਼ਾ ਲਵੋ",
         "prediction": "ਸਾਡਾ ਅੰਦਾਜ਼ਾ",
         "result_prefix": "ਮਾਡਲ ਅਨੁਸਾਰ: ",
+        "confidence": "ਵਿਸ਼ਵਾਸ ਪੱਧਰ: ",
         "footer": "© 2025 ਖੇਤ ਸਹਾਇਕ. ਸਰਬੱਤ ਹੱਕ ਰਾਖਵੇਂ ਹਨ."
     },
 }
@@ -125,12 +130,13 @@ if test_image is not None:
             'Tomato___Target_Spot', 'Tomato___Tomato_Yellow_Leaf_Curl_Virus', 'Tomato___Tomato_mosaic_virus',
             'Tomato___healthy'
         ]
-        result_index = model_prediction(test_image)
+        result_index, confidence = model_prediction(test_image)
         st.success(f"{labels['result_prefix']}{class_name[result_index]}")
+        st.info(f"{labels['confidence']}{confidence:.2f}%")
+        
 st.markdown("</div></div>", unsafe_allow_html=True)
 
 st.markdown(
     f'<div class="footer"><p>{labels["footer"]}</p></div>',
     unsafe_allow_html=True
 )
-
